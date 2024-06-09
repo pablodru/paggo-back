@@ -1,19 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { UploadRepository } from './upload.repository';
 
 @Injectable()
 export class UploadService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly uploadRepository: UploadRepository) {}
 
   async saveImage(file: Express.Multer.File, text: string) {
-    const newFile = await this.prisma.file.create({
-      data: {
-        filename: file.originalname,
-        text: text,
-        data: file.buffer,
-      },
-    });
-
-    return newFile;
+    return this.uploadRepository.createFile(file.originalname, text, file.buffer);
   }
 }
