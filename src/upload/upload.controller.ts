@@ -42,7 +42,7 @@ import {
       if (!file) {
         throw new BadRequestException('File is not provided.');
       }
-      return this.uploadService.saveImage(file, text);
+      return this.uploadService.saveImage(file);
     }
   }
   
