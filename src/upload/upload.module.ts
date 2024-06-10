@@ -3,8 +3,8 @@ import { UploadService } from './upload.service';
 import { UploadController } from './upload.controller';
 import { PrismaModule } from '../prisma/prisma.module';
 import { UploadRepository } from './upload.repository';
-import { TextractClient } from '@aws-sdk/client-textract';
 import * as dotenv from 'dotenv';
+import { AWSTextractService } from 'src/aws-textract/awsTextract';
 
 dotenv.config();
 
@@ -14,18 +14,7 @@ dotenv.config();
   providers: [
     UploadService,
     UploadRepository,
-    {
-      provide: TextractClient,
-      useFactory: () => {
-        return new TextractClient({
-          region: process.env.AWS_REGION,
-          credentials: {
-            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-          },
-        });
-      },
-    },
+    AWSTextractService
   ],
 })
 export class UploadModule {}

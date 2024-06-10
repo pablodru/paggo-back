@@ -1,11 +1,12 @@
 import {
-    Controller,
-    Post,
-    UploadedFile,
-    UseInterceptors,
-    Body,
-    BadRequestException
-  } from '@nestjs/common';
+  Controller,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+  Headers,
+  BadRequestException,
+  UnauthorizedException
+} from '@nestjs/common';
   import { FileInterceptor } from '@nestjs/platform-express';
   import { diskStorage } from 'multer';
   import { extname } from 'path';
@@ -37,12 +38,16 @@ import {
     )
     async uploadFile(
       @UploadedFile() file: Express.Multer.File,
-      @Body('text') text: string
+      @Headers('authorization') token: string
     ) {
       if (!file) {
         throw new BadRequestException('File is not provided.');
       }
+
+      if (!token) {
+        throw new UnauthorizedException('Authorization token is not provided.');
+      }
+
       return this.uploadService.saveImage(file);
     }
   }
-  
