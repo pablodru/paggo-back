@@ -1,6 +1,8 @@
+import { Injectable } from '@nestjs/common';
 import { File } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 
+@Injectable()
 export class UploadRepository {
   constructor(private readonly prisma: PrismaService) {}
 
@@ -12,5 +14,11 @@ export class UploadRepository {
         data,
       },
     });
+  }
+
+  async findTextByBuffer(data: Buffer) {
+    return this.prisma.file.findFirst({
+      where: { data }
+    })
   }
 }

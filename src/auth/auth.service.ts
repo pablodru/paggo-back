@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthRepository } from './auth.repository';
 
 @Injectable()
@@ -20,5 +20,15 @@ export class AuthService {
       console.error('Error authenticating user:', error);
       return { success: false, message: 'Internal Server Error' };
     }
+  }
+
+  async validateToken(authorization: string): Promise<boolean> {
+    const token = authorization.split(' ')[1];
+    const user = await this.authRepository.findUserByToken(token);
+    
+    if (!user) {
+      throw new UnauthorizedException('Invalid token.');
+    }
+    return true;
   }
 }

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { TextractClient, FeatureType } from '@aws-sdk/client-textract';
+import { AnalyzeExpenseCommandOutput, TextractClient } from '@aws-sdk/client-textract';
 import { UploadRepository } from './upload.repository';
-import { File } from '@prisma/client';
 import { AWSTextractService } from 'src/aws-textract/awsTextract';
+import * as fs from 'fs/promises';
 
 @Injectable()
 export class UploadService {
@@ -11,25 +11,37 @@ export class UploadService {
     private readonly awsTextract: AWSTextractService,
   ) {}
 
-  async saveImage(file: Express.Multer.File): Promise<File> {
-    const ocrText = await this.extractTextFromImage(file.buffer);
-
-    return this.uploadRepository.createFile(
+  async loadText(file: Express.Multer.File): Promise<any> {
+    
+    const buffer = await fs.readFile(file.path);
+    const existingInvoice = await this.uploadRepository.findTextByBuffer(buffer);
+    if (existingInvoice){
+      return {ocrText: existingInvoice.text}
+    }
+    
+    const ocrText = await this.extractTextFromImage(buffer);
+console.log('1111111111111');
+    await this.uploadRepository.createFile(
       file.originalname,
       ocrText,
-      file.buffer,
+      buffer,
     );
+
+    return {
+      ocrText,
+    };
   }
 
-  private async extractTextFromImage(imageBuffer: Buffer): Promise<string> {
+  private async extractTextFromImage(buffer: Buffer): Promise<string> {
     const params = {
       Document: {
-        Bytes: imageBuffer,
+        Bytes: buffer,
       },
     };
 
     try {
       const response = await this.awsTextract.analyzeInvoice(params);
+
       return this.parseText(response);
     } catch (error) {
       console.error('Error processing image with Textract:', error);
@@ -37,14 +49,21 @@ export class UploadService {
     }
   }
 
-  private parseText(response: any): string {
-    if (!response || !response.Blocks) {
+  private parseText(response: AnalyzeExpenseCommandOutput): string {
+    if (!response || !response.ExpenseDocuments || !response.ExpenseDocuments.length) {
       return '';
     }
 
-    const textBlocks = response.Blocks.filter(
-      (block) => block.BlockType === 'LINE',
-    );
-    return textBlocks.map((block) => block.Text).join('\n');
+    const expenseDocument = response.ExpenseDocuments[0];
+    const blocks = expenseDocument.Blocks;
+
+    if (!blocks || !blocks.length) {
+      return '';
+    }
+
+    const textBlocks = blocks.filter(block => block.BlockType === 'LINE');
+    const texts = textBlocks.map(block => block.Text).join('\n');
+
+    return texts;
   }
 }

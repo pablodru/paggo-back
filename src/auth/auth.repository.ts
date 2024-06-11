@@ -33,4 +33,10 @@ export class AuthRepository {
       },
     });
   }
+
+  async findUserByToken(token: string): Promise<userSession | null> {
+    return this.prisma.userSession.findUnique({
+      where: { token },
+    });
+  }
 }
