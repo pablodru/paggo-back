@@ -10,24 +10,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model userSession {
   id        Int      @id @default(autoincrement())
   email     String   @unique
-  name      String
-  googleId  String   @unique
+  token     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  sessions  Session[]
-}
-
-model Session {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  token     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user      User     @relation(fields: [userId], references: [id])
 }
 
 model File {
