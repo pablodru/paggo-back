@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AnalyzeExpenseCommandOutput, TextractClient } from '@aws-sdk/client-textract';
 import { UploadRepository } from './upload.repository';
-import { AWSTextractService } from 'src/aws-textract/awsTextract';
+import { AWSTextractService } from '..//aws-textract/awsTextract';
 import * as fs from 'fs/promises';
 
 @Injectable()
@@ -20,7 +20,7 @@ export class UploadService {
     }
     
     const ocrText = await this.extractTextFromImage(buffer);
-console.log('1111111111111');
+
     await this.uploadRepository.createFile(
       file.originalname,
       ocrText,

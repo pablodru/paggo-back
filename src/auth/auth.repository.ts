@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { userSession } from '@prisma/client';
 
 @Injectable()
@@ -35,7 +35,7 @@ export class AuthRepository {
   }
 
   async findUserByToken(token: string): Promise<userSession | null> {
-    return this.prisma.userSession.findUnique({
+    return await this.prisma.userSession.findUnique({
       where: { token },
     });
   }
