@@ -1,73 +1,98 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Paggo-back
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Este é o backend do projeto InvoiceSnap, um sistema que trata o upload de imagens e utiliza o OCR que utiliza o NestJS, Prisma, e AWS Textract para processamento de imagens e autenticação de usuários.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Índice
 
-## Description
+- [Descrição](#descrição)
+- [Instalação](#instalação)
+- [Configuração](#configuração)
+- [Uso](#uso)
+- [Estrutura do Projeto](#estrutura-do-projeto)
+- [Testes](#testes)
+- [Contribuição](#contribuição)
+- [Licença](#licença)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Descrição
 
-## Installation
+Paggo-back é um serviço backend desenvolvido com NestJS que fornece APIs para upload de imagens e autenticação de usuários. Ele usa Prisma como ORM para interação com o banco de dados e AWS Textract para extrair texto de imagens enviadas. Certifique-se de ter seu cadastro na AWS para usar o Textract.
 
-```bash
-$ npm install
-```
+## Instalação
 
-## Running the app
+1. Clone o repositório:
 
-```bash
-# development
-$ npm run start
+    ```sh
+    git clone https://github.com/pablodru/paggo-back.git
+    cd paggo-back
+    ```
 
-# watch mode
-$ npm run start:dev
+2. Instale as dependências:
 
-# production mode
-$ npm run start:prod
-```
+    ```sh
+    npm install
+    ```
 
-## Test
+## Configuração
 
-```bash
-# unit tests
-$ npm run test
+1. Configure as variáveis de ambiente. Crie um arquivo `.env` na raiz do projeto e adicione as seguintes variáveis:
 
-# e2e tests
-$ npm run test:e2e
+    ```env
+    DATABASE_URL=your_database_url
+    AWS_ACCESS_KEY_ID=your_aws_access_key
+    AWS_SECRET_ACCESS_KEY=your_aws_secret_access
+    AWS_REGION=your_aws_region
+    ```
 
-# test coverage
-$ npm run test:cov
-```
+2. Configure o Prisma:
 
-## Support
+    ```sh
+    npx prisma generate
+    npx prisma migrate dev
+    ```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Inicialização
 
-## Stay in touch
+Para iniciar o servidor, use o comando:
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+  ```sh
+  npm run dev
+  ```
 
-## License
+## Endpoints
 
-Nest is [MIT licensed](LICENSE).
+### Autenticação
+
+- **URL:** `POST /auth/signin`
+- **Body:**
+  - `email`: Email do usuário
+  - `token`: Token gerado pelo firebase para o login
+- **Resposta:**
+  ```json
+  {
+    "success": Boolean,
+    "message": Mensagem referente ao sucesso do login
+  }
+
+#### Upload de Imagem
+
+- **URL:** `POST /upload/image`
+- **Headers:**
+  - `Content-Type: multipart/form-data`
+  - `Authorization: Bearer <token>`
+- **Body:**
+  - `file`: A imagem a ser enviada (jpg, jpeg, png, gif)
+- **Resposta:**
+  ```json
+  {
+    "ocrText": "Texto extraído da imagem"
+  }
+
+## Tecnologias
+
+- **Node.js**: v14.x
+- **NestJS**: v10.x
+- **Prisma**: v5.15.0
+- **AWS Textract SDK**: v3.592.0
+- **Jest**: v29.7.0
+- **TypeScript**: v5.1.3
+- **Multer**: v1.4.5
