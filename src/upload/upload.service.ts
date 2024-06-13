@@ -3,6 +3,7 @@ import { AnalyzeExpenseCommandOutput, TextractClient } from '@aws-sdk/client-tex
 import { UploadRepository } from './upload.repository';
 import { AWSTextractService } from '..//aws-textract/awsTextract';
 import * as fs from 'fs/promises';
+import { userSession } from '@prisma/client';
 
 @Injectable()
 export class UploadService {
@@ -11,7 +12,7 @@ export class UploadService {
     private readonly awsTextract: AWSTextractService,
   ) {}
 
-  async loadText(file: Express.Multer.File): Promise<any> {
+  async loadText(file: Express.Multer.File, user: userSession): Promise<any> {
     
     const buffer = await fs.readFile(file.path);
     const existingInvoice = await this.uploadRepository.findTextByBuffer(buffer);
@@ -25,6 +26,7 @@ export class UploadService {
       file.originalname,
       ocrText,
       buffer,
+      user.id
     );
 
     return {

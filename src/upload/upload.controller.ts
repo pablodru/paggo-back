@@ -52,9 +52,9 @@ export class UploadController {
       throw new UnauthorizedException('Authorization token is not provided.');
     }
 
-    await this.authService.validateToken(token);
+    const user = await this.authService.validateToken(token);
 
-    const response = await this.uploadService.loadText(file);
+    const response = await this.uploadService.loadText(file, user);
 
     return response;
   }
