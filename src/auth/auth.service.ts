@@ -1,6 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthRepository } from './auth.repository';
-import { userSession } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -23,7 +22,7 @@ export class AuthService {
     }
   }
 
-  async validateToken(authorization: string): Promise<userSession> {
+  async validateToken(authorization: string) {
     const token = authorization.split(' ')[1];
     const user = await this.authRepository.findUserByToken(token);
     
