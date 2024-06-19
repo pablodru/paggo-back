@@ -6,6 +6,9 @@ Este é o backend do projeto InvoiceSnap, um sistema que trata o upload de image
 
 Paggo-back é um serviço backend desenvolvido com NestJS que fornece APIs para upload de imagens e autenticação de usuários. Ele usa Prisma como ORM para interação com o banco de dados e AWS Textract para extrair texto de imagens enviadas. Certifique-se de ter seu cadastro na AWS para usar o Textract.
 
+O deploy do Back-end pode ser utilizado pelo link: [https://paggo-back.onrender.com](https://paggo-back.onrender.com)
+O Front-end dessa aplicação está disponível em: [https://www.github.com/pablodru/paggo-front](https://www.github.com/pablodru/paggo-front)
+
 ## Instalação
 
 1. Clone o repositório:
